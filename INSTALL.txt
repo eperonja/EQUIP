@@ -1,0 +1,37 @@
+1 - Install driver from Silabs. A restart might be needed and connect the detector.
+	(Download from: http://www.silabs.com/products/mcu/Pages/USBtoUARTBridgeVCPDrivers.aspx)
+2 - Extract all files from CosmicRayDetector.zip
+	This will create a folder called CosmicRayDetector in your default download area.
+2 - Use this folder or move somewhere else in your computer.
+3 - If you are using a MAC:
+	Open a terminal window
+	Type 'cd /var'
+	Type 'sudo mkdir lock' (This will ask you for sudo password)
+	Type 'chown -R [user]:wheel /var/lock' (where [user] is your username)
+
+4 - a-Double click on CosmicRayDetector.jar or
+    b-Open a Terminal Window, go to the CosmicRayDetector folder and execute: java -jar CosmicRayDetector.jar.
+    In my opinion, option b is better because you will see right away if the program has any problems or exceptions occur.
+
+NB: you need at least Java 6 in your machine for this to work.
+To test, open a terminal window and type: java -version.
+
+6 - To build the jar: 
+	in the bin file (after re-building the whole project)
+	jar cvfm EQUIP_02JUN2014.jar EQUIP.mf EQUIP*class TitlePage*class title.html images
+	then, deploy the EQUIP.jar inside a folder with all the libraries:
+
+	EQUIP.jar
+	data
+	freehep-jminuit-1.0.jar
+	jcommon-1.0.17.jar
+	jfreechart-1.0.14.jar
+	junit.jar
+	librxtxSerial.jnilib
+	RXTXcomm.jar
+	
+7 - Ubuntu 
+	sudo apt-get install librxtx-java
+	sudo usermod -a -G dialout $USER
+	sudo reboot
+	
