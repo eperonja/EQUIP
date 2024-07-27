@@ -154,8 +154,10 @@ public class EQUIPKernel {
             	try {
                     ((EQUIPOutputHandler)handlers.get(j)).Process(line);            		
             	} catch (Exception e) {
-                    System.out.println("Line: "+line+ " " + e.getMessage());
-                    e.printStackTrace();
+            		if (!line.contains("Latitude:")) {
+            			System.out.println("Line: "+line+ " " + e.getMessage());
+            			e.printStackTrace();
+            		}
                     continue;
             	}
               }

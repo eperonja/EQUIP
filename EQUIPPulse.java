@@ -63,6 +63,15 @@ public class EQUIPPulse {
       return time_falling_edge;
     }
     public double TimeOverThreshold() {
+      //System.out.println("Time over Threshold");
+      //System.out.println(Long.toString(counter_falling_edge));
+      //System.out.println(Long.toString(counter_rising_edge));
+      //System.out.println(Long.toString(counter_falling_edge-counter_rising_edge));
+      //System.out.println(Integer.toString(time_falling_edge));
+      //System.out.println(Integer.toString(time_falling_edge&0x1f));
+      //System.out.println(Integer.toString(time_rising_edge));
+      //System.out.println(Integer.toString(time_rising_edge&0x1f));
+
       return 40.0*(counter_falling_edge-counter_rising_edge) +
     		  bin_width*((time_falling_edge&0x1f)-((time_rising_edge&0x1f)));
     }

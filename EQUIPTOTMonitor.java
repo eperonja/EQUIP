@@ -99,6 +99,7 @@ public class EQUIPTOTMonitor extends JPanel {
        	  //} catch (Exception ioex) {
        		  
        	  //}
+    	  //System.out.println(s);
           String [] tokens = s.split(" ");
           if ( tokens.length == 16 ) {
             if ( tokens[12].matches("[AV]") ) {
@@ -119,10 +120,13 @@ public class EQUIPTOTMonitor extends JPanel {
               }
             }
             int i = 0;
+            //System.out.println(tokens[i++]);
             long t = Long.parseLong(tokens[i++],16);
+            //System.out.println(Long.toString(t));
             int [] re = new int [4];
             int [] fe = new int [4];
             for ( int j=0; j<4; j++ ) {
+              //System.out.println("Processing the pulse");
               re[j] = Integer.parseInt(tokens[i++],16);
               fe[j] = Integer.parseInt(tokens[i++],16);
               //try {
@@ -132,7 +136,16 @@ public class EQUIPTOTMonitor extends JPanel {
             	//  bw.newLine();
            	  //} catch (Exception ioex) {}
               
+              int x0 = re[0];
+              int x1 = re[0]&0x80;
+              int x2 = x1;
+              int x4 = x0;
+              //System.out.println(Integer.toString(j));
+              //System.out.println(Long.toString(t));
+              //System.out.println(Integer.toString(re[j]));
+              //System.out.println(Integer.toString(fe[j]));
               if ( (re[0]&0x80) != 0 && pulse[j] != null ) {
+                //System.out.println("Testing RE[0] bitwise 80 -to set output boxes");
                 nana += 1;
                 if ( pulse[j].HasRisingEdge() && ! pulse[j].HasFallingEdge() ) {
                   ufe += 1;
@@ -144,11 +157,13 @@ public class EQUIPTOTMonitor extends JPanel {
                 }
               }
               if ( (re[0]&0x80) != 0 || pulse[j] == null ) {
+                //System.out.println("Testing RE[0] bitwise 80 and check for pulse null");
                 pulse[j] = new EQUIPPulse(j);
               }
               if ( (fe[j]&0x20) != 0 ) {
+                  //System.out.println("Testing FE[j] bitwise 20 and set the falling edge with t and fe[j]");
                 if ( pulse[j] == null ) {
-                  System.out.println("pulses["+Integer.toString(j)+"] is null");
+                  //System.out.println("pulses["+Integer.toString(j)+"] is null");
                 }
                 pulse[j].SetFallingEdge(t,fe[j]);
                 //try {
@@ -170,9 +185,13 @@ public class EQUIPTOTMonitor extends JPanel {
            		//
            	  //}
             	if ( pulse[j].Valid() ) {
-                  double dt = pulse[j].TimeOverThreshold();                  
+                  //System.out.println("Check if the pulse is valid and calculate TOT");
+                  double dt = pulse[j].TimeOverThreshold(); 
+                  //if (j == 0) {
+                	//  System.out.println(dt);
+                  //}
                   //try {
-                    dataset[j].addObservation(dt);
+                  dataset[j].addObservation(dt);
     	         //   for (int x=0; x < dataset[j].getItemCount(0); x++) {
     	        //        try {
     	          //    	  bw.append("Channel "+String.valueOf(j)+" Series: "+String.valueOf(x)+" count:" );
@@ -187,9 +206,10 @@ public class EQUIPTOTMonitor extends JPanel {
                 }
               }
               if ( (re[j]&0x20) != 0 ) {
-                if ( pulse[j] == null ) {
-                  System.out.println("pulses["+Integer.toString(j)+"] is null");
-                }
+                //if ( pulse[j] == null ) {
+                //  System.out.println("pulses["+Integer.toString(j)+"] is null");
+                //}
+                //System.out.println("Testing RE[j] bitwise 20 and set the rising edge with t and re[j]");
                 pulse[j].SetRisingEdge(t,re[j]);
                 //try {
                //	  bw.append("Setting Rising Edge "+String.valueOf(j)+" counter:" +String.valueOf(t) +"-time:" +String.valueOf(re[j]));
@@ -197,6 +217,8 @@ public class EQUIPTOTMonitor extends JPanel {
                //	  } catch (Exception ioex) {}
 
               }
+              //System.out.println("counter pulses["+Integer.toString(j)+"]="+Double.toString(pulse[j].counter_falling_edge)+"= "+Double.toString(pulse[j].counter_rising_edge));
+              //System.out.println("time pulses["+Integer.toString(j)+"]="+Double.toString(pulse[j].time_falling_edge)+"= "+Double.toString(pulse[j].time_rising_edge));
             }
             nana_text.setText(Integer.toString(nana));
           }

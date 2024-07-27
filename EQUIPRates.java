@@ -39,8 +39,8 @@ import org.jfree.chart.renderer.xy.XYErrorRenderer;
 import org.jfree.data.general.DefaultValueDataset;
 import org.jfree.data.xy.YIntervalSeries;
 import org.jfree.data.xy.YIntervalSeriesCollection;
-import org.jfree.ui.GradientPaintTransformType;
-import org.jfree.ui.StandardGradientPaintTransformer;
+import org.jfree.chart.ui.GradientPaintTransformType;
+import org.jfree.chart.ui.StandardGradientPaintTransformer;
 
 public class EQUIPRates extends JPanel {
     DefaultValueDataset dial_dataset;

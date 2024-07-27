@@ -35,6 +35,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.data.xy.XYDataItem;
 
 public class EQUIPAirShow extends JPanel {
     EventPicture view;
@@ -108,7 +109,8 @@ public class EQUIPAirShow extends JPanel {
         text.add(new String());
       }
       void AddFallingEdge(int i,double t) {
-        Color [] channel_colors = { Color.red, Color.green, Color.blue, Color.cyan };
+      	//System.out.println("adding falling edge");
+      	Color [] channel_colors = { Color.red, Color.green, Color.blue, Color.cyan };
         qx.add(det_x[i]);
         qy.add(det_y[i]);
         qz.add(det_z[i]+t*scale);
@@ -116,7 +118,8 @@ public class EQUIPAirShow extends JPanel {
         repaint();
       }
       void AddRisingEdge(int i,double t) {
-        Color blank = new Color(0,0,0,0);
+      	//System.out.println("adding rising edge");
+      	Color blank = new Color(0,0,0,0);
         chcol.add(blank);
         qx.add(det_x[i]);
         qy.add(det_y[i]);
@@ -130,6 +133,7 @@ public class EQUIPAirShow extends JPanel {
         text.add(s);
       }
       void AddArrow() {
+    	//System.out.println("adding arrow");
         Color c = new Color(0,0,0,0);
         AddPoint(-0.05,-0.05,0,c);
         c = Color.blue;
@@ -248,6 +252,10 @@ public class EQUIPAirShow extends JPanel {
           else if ( c.getAlpha() > 0 ) {
             g2d.setColor(c);
             g2d.drawLine((int)(w/2+x0),(int)(h/2-y0),(int)(w/2+x1),(int)(h/2-y1));
+            //System.out.println("x:"+Integer.toString((int)(w/2+x0)));
+            //System.out.println("y:"+Integer.toString((int)(h/2-y0)));
+            //System.out.println("x1:"+Integer.toString((int)(w/2+x1)));
+            //System.out.println("y1:"+Integer.toString((int)(h/2-y1)));
             if ( i > color.size() ) {
               g2d.fillRect((int)(w/2+x0-2),(int)(h/2-y0-2),4,4);
             }
@@ -348,19 +356,28 @@ public class EQUIPAirShow extends JPanel {
         for ( int j=0; j<4; j++ ) {
           n = disc[j].getItemCount();
           if ( n > 0 ) {
+            //System.out.println("Count: "+Integer.toString(n));
+            //System.out.println("j: "+Integer.toString(j));
+            //System.out.println("x: "+Double.toString(disc[j].getX(n-1).doubleValue()));
+            //System.out.println("y: "+Double.toString(disc[j].getY(n-1).doubleValue()));        	  
             double x = disc[j].getX(n-1).doubleValue();
             disc[j].remove(n-1);
             if ( x > tmax ) tmax = x;
-          }
+            //System.out.println("tmax: "+Double.toString(tmax));
+              }
         }
         if ( tmax <= t ) {
           int j = 0;
-          while ( tend[j] > 0 && tend[j] < t ) j++;
+          while ( tend[j] > 0 && tend[j] < t ) {
+              //System.out.println("tend[j]: "+Double.toString(tend[j]));           
+        	  j++;
+          }
           if ( tend[j] < 0 ) j -= 1;
           tmax = tend[j];
         }
         
         n = disc[i].getItemCount();
+        //System.out.println("Count: "+Integer.toString(n));
         if ( n == 0 ) {
           disc[i].add(0,2*i);
         }
@@ -369,6 +386,7 @@ public class EQUIPAirShow extends JPanel {
           n = disc[j].getItemCount();
           if ( n > 0 ) {
             double y = disc[j].getY(n-1).doubleValue();
+            //System.out.println("y: "+Double.toString(y));
             disc[j].add(tmax,y);
           }
         }
@@ -432,6 +450,7 @@ public class EQUIPAirShow extends JPanel {
               }
               if ( (fe[j]&0x20) != 0 ) {
                 double time = 40.0*(t-t0)+1.25*(fe[j]&0x1f);
+                //System.out.println("add transition 0: "+Integer.toString(j)+ ", "+Double.toString(time));;
                 scope.AddTransition(j,time,0);
                 if ( pulse[j] != null ) {
                   pulse[j].SetFallingEdge(t,fe[j]);
@@ -444,10 +463,49 @@ public class EQUIPAirShow extends JPanel {
               }
               if ( (re[j]&0x20) != 0 ) {
                 double time = 40.0*(t-t0)+1.25*(re[j]&0x1f);
+                //System.out.println("add transition 1: "+Integer.toString(j)+ ", "+Double.toString(time));;
                 scope.AddTransition(j,time,1);
                 pulse[j] = new EQUIPPulse(j);
                 pulse[j].SetRisingEdge(t,re[j]);
               }
+              /*
+              XYSeries series0 = scope.dataset.getSeries(0);
+              System.out.println("Series 0");
+              for (Object p : series0.getItems()) {
+            	  XYDataItem item = (XYDataItem) p;
+            	  double x = item.getXValue();
+            	  double y = item.getYValue();
+                  System.out.println(Double.toString(x));
+                  System.out.println(Double.toString(y));
+            	}
+              XYSeries series1 = scope.dataset.getSeries(1);
+              System.out.println("Series 1");
+              for (Object p : series1.getItems()) {
+            	  XYDataItem item = (XYDataItem) p;
+            	  double x = item.getXValue();
+            	  double y = item.getYValue();
+                  System.out.println(Double.toString(x));
+                  System.out.println(Double.toString(y));
+            	}
+              XYSeries series2= scope.dataset.getSeries(2);
+              System.out.println("Series 2");
+              for (Object p : series2.getItems()) {
+            	  XYDataItem item = (XYDataItem) p;
+            	  double x = item.getXValue();
+            	  double y = item.getYValue();
+                  System.out.println(Double.toString(x));
+                  System.out.println(Double.toString(y));
+            	}
+              XYSeries series3= scope.dataset.getSeries(3);
+              System.out.println("Series 3");
+              for (Object p : series3.getItems()) {
+            	  XYDataItem item = (XYDataItem) p;
+            	  double x = item.getXValue();
+            	  double y = item.getYValue();
+                  System.out.println(Double.toString(x));
+                  System.out.println(Double.toString(y));
+            	}
+            	*/
             }
             output.append(s);
           }

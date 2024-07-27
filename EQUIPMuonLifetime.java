@@ -278,11 +278,11 @@ import org.jfree.data.xy.XYSeriesCollection;
           found[p.Channel()] = true;
           if ( ! p.equals(pmin) ) {
             try {
-              System.out.println("Pmin channel: "+ pmin.Channel());
-              System.out.println("Pmin: "+pmin.DumpThresholdValues());
-              System.out.println("p: "+p.DumpThresholdValues());
-              System.out.println("Channel: " + String.valueOf(p.Channel()));
-              System.out.println("Time Until: " + String.valueOf(pmin.TimeUntil(p)));
+              //System.out.println("Pmin channel: "+ pmin.Channel());
+              //System.out.println("Pmin: "+pmin.DumpThresholdValues());
+              //System.out.println("p: "+p.DumpThresholdValues());
+              //System.out.println("Channel: " + String.valueOf(p.Channel()));
+              //System.out.println("Time Until: " + String.valueOf(pmin.TimeUntil(p)));
               deltat_dataset[p.Channel()].addObservation(pmin.TimeUntil(p));
             }
             catch ( Exception e ) {
@@ -305,7 +305,7 @@ import org.jfree.data.xy.XYSeriesCollection;
         	EQUIPPulse p = (EQUIPPulse)pulses.get(i);
             double dt = pmin.TimeUntil(p);
             if ( p.Channel() == pmin.Channel() && dt > window ) {
-              System.out.println("Delta t = "+Double.toString(dt)+" ns - Fill!");
+              //System.out.println("Delta t = "+Double.toString(dt)+" ns - Fill!");
               measurements.add(dt);
               try {
                 lifetime_dataset.addObservation(dt);
@@ -335,7 +335,7 @@ import org.jfree.data.xy.XYSeriesCollection;
             int [] re = new int [4];
             int [] fe = new int [4];
             for ( int j=0; j<4; j++ ) {
-              System.out.println(s);
+              //System.out.println(s);
               re[j] = Integer.parseInt(tokens[i++],16);
               fe[j] = Integer.parseInt(tokens[i++],16);
               if ( (re[0]&0x80) != 0 ) {
@@ -353,7 +353,7 @@ import org.jfree.data.xy.XYSeriesCollection;
               }
               if ( (fe[j]&0x20) != 0 ) {
                 if ( pulse[j] == null ) {
-                  System.out.println("pulses["+Integer.toString(j)+"] is null");
+                  //System.out.println("pulses["+Integer.toString(j)+"] is null");
                 }
                 pulse[j].SetFallingEdge(t,fe[j]);
                 if ( pulse[j].Valid() ) {
@@ -363,7 +363,7 @@ import org.jfree.data.xy.XYSeriesCollection;
               }
               if ( (re[j]&0x20) != 0 ) {
                 if ( pulse[j] == null ) {
-                  System.out.println("pulses["+Integer.toString(j)+"] is null");
+                  //System.out.println("pulses["+Integer.toString(j)+"] is null");
                 }
                 pulse[j].SetRisingEdge(t,re[j]);
               }

@@ -68,7 +68,6 @@ public class EQUIPGeometry extends JPanel {
     int angle;
     JSlider orientation;
     MapPicture map;
-    static String geometry_conf = "conf/geometry.conf";
     
     private class ButtonListener implements ActionListener {
       public void actionPerformed(ActionEvent evt) {
@@ -156,8 +155,6 @@ public class EQUIPGeometry extends JPanel {
     private class UpdateGeometryListener implements ActionListener {
       public void actionPerformed(ActionEvent evt) {
         air_shower_panel.UpdateGeometry(east_west_value,north_south_value,up_down_value,angle);
-        TreeMap<String, ArrayList> geometry = getGeometry();
-        EQUIPTools.setSavedGeometry(geometry_conf, geometry);
       }
     }
 
@@ -187,22 +184,7 @@ public class EQUIPGeometry extends JPanel {
         }
       }
     }
-
-    public TreeMap<String, ArrayList> getGeometry() {
-    	TreeMap<String, ArrayList> temp = new TreeMap<String, ArrayList>();
-    	temp.put("CableLength", getValues(cable_length));
-    	temp.put("Area", getValues(counter_area));
-    	temp.put("EastWest", getValues(east_west));
-    	temp.put("NorthSouth", getValues(north_south));
-    	temp.put("UpDown", getValues(up_down));
-    	temp.put("Stacked", getRadio(stacked_button));
-    	temp.put("Latitude", getValue(latitude_text));
-    	temp.put("Longitude", getValue(longitude_text));
-    	temp.put("Altitude", getValue(altitude_text));
-    	temp.put("GpsCableLength", getValue(gps_cable_text));
-    	return temp;
-    }//end of getGeometry
-    
+   
     public ArrayList getRadio(JRadioButton radioButton) {
     	ArrayList tempList = new ArrayList();
     	if (radioButton.isSelected()) {
@@ -227,74 +209,6 @@ public class EQUIPGeometry extends JPanel {
     	return tempList;
     }//end of getValues
     
-    public void setUserGeometryValues(TreeMap<String, ArrayList> geoConf) {
-    	if (geoConf.containsKey("CableLength")) {
-	    	Object[] temp_cable_length = geoConf.get("CableLength").toArray();
-	    	user_cable_length = new String[temp_cable_length.length];
-	    	for (int i = 0; i < temp_cable_length.length; i++) {
-	    		user_cable_length[i] = (String) temp_cable_length[i];
-	    	}
-    	}
-       	if (geoConf.containsKey("Area")) {
-       		Object[] temp_area = geoConf.get("Area").toArray();
-	    	user_counter_area = new String[temp_area.length];
-	    	for (int i = 0; i < temp_area.length; i++) {
-	    		user_counter_area[i] = (String) temp_area[i];
-	    	}
-    	}
-       	if (geoConf.containsKey("EastWest")) {
-	    	Object[] temp_east_west = geoConf.get("EastWest").toArray();
-	    	user_east_west = new String[temp_east_west.length];
-	    	for (int i = 0; i < temp_east_west.length; i++) {
-	    		user_east_west[i] = (String) temp_east_west[i];
-	    	}
-    	}
-       	if (geoConf.containsKey("NorthSouth")) {
-	    	Object[] temp_north_south = geoConf.get("NorthSouth").toArray();
-	    	user_north_south = new String[temp_north_south.length];
-	    	for (int i = 0; i < temp_north_south.length; i++) {
-	    		user_north_south[i] = (String) temp_north_south[i];
-	    	}
-    	}
-       	if (geoConf.containsKey("UpDown")) {
-	    	Object[] temp_up_down = geoConf.get("UpDown").toArray();
-	    	user_up_down = new String[temp_up_down.length];
-	    	for (int i = 0; i < temp_up_down.length; i++) {
-	    		user_up_down[i] = (String) temp_up_down[i];
-	    	}
-    	}
-       	if (geoConf.containsKey("Stacked")) {
-	    	Object[] temp_stacked = geoConf.get("Stacked").toArray();
-	    	for (int i = 0; i < temp_stacked.length; i++) {
-	    		user_stacked = (String) temp_stacked[i];
-	    	}
-    	}
-       	if (geoConf.containsKey("Latitude")) {
-	    	Object[] temp_latitude = geoConf.get("Latitude").toArray();
-	    	for (int i = 0; i < temp_latitude.length; i++) {
-	    		user_latitude = (String) temp_latitude[i];
-	    	}    	
-    	}
-       	if (geoConf.containsKey("Longitude")) {
-	    	Object[] temp_longitude = geoConf.get("Longitude").toArray();
-	    	for (int i = 0; i < temp_longitude.length; i++) {
-	    		user_longitude = (String) temp_longitude[i];
-	    	}    	
-    	}
-       	if (geoConf.containsKey("Altitude")) {
-	    	Object[] temp_altitude = geoConf.get("Altitude").toArray();
-	    	for (int i = 0; i < temp_altitude.length; i++) {
-	    		user_altitude = (String) temp_altitude[i];
-	    	}    	
-    	}
-       	if (geoConf.containsKey("GpsCableLength")) {
-	    	Object[] temp_gps_cable_length = geoConf.get("GpsCableLength").toArray();
-	    	for (int i = 0; i < temp_gps_cable_length.length; i++) {
-	    		user_gps_cable = (String) temp_gps_cable_length[i];
-	    	}    	
-       	}
-    }//end of setUserGeometryValues
-
     public EQUIPGeometry(EQUIPAirShow a) {
       setPreferredSize(new Dimension(1000,800));
       GroupLayout layout = new GroupLayout(this);
@@ -321,7 +235,7 @@ public class EQUIPGeometry extends JPanel {
 
       MapOutputHandler map_handler = new MapOutputHandler();
       EQUIP.kernel.AddOutputHandler(map_handler);
-
+/*
       GridLayout table_layout = new GridLayout(5,6,10,5);
       JPanel table = new JPanel(table_layout);
 
@@ -338,21 +252,16 @@ public class EQUIPGeometry extends JPanel {
         column_labels[i].setMaximumSize(new Dimension(90,25));
         table.add(column_labels[i]);
       }
+*/
+/*      
       counter_icon = new JLabel [4];
       cable_length = new JTextField [4];
       counter_area = new JTextField [4];
       east_west = new JTextField [4];
       north_south = new JTextField [4];
       up_down = new JTextField [4];
-      //check if we have a geometry file
-      if (EQUIPTools.verifyFile(geometry_conf, "geometry")) {
-    	  //get stored geometry
-    	  TreeMap<String, ArrayList> geoConf = EQUIPTools.getSavedGeometry(geometry_conf);
-    	  if (geoConf != null) {
-    		  setUserGeometryValues(geoConf);
-    	  }
-      }
- 
+*/
+/* 
       east_west_value = new double [] { 0.5, -0.5, -0.5, 0.5 };
       if (user_east_west != null && user_east_west.length == 4) {
     	for (int x=0; x < 4; x++) {
@@ -473,7 +382,7 @@ public class EQUIPGeometry extends JPanel {
       button_panel.add(stacked_button);
       button_panel.add(unstacked_label);
       button_panel.add(unstacked_button);
-
+*/
       JLabel latitude_label = new JLabel("Latitude: ");
       latitude_text = new JTextField();
       latitude_text.setEditable(false);
@@ -507,6 +416,7 @@ public class EQUIPGeometry extends JPanel {
       //  altitude_text.setText(user_altitude);    	  
       //}
 
+/*      
       JLabel gps_cable_label = new JLabel("GPS cable length (m): ");
       gps_cable_text = new JTextField();
       gps_cable_text.setEditable(true);
@@ -521,53 +431,65 @@ public class EQUIPGeometry extends JPanel {
       JButton update_button = new JButton("Update geometry");
       UpdateGeometryListener update_listener = new UpdateGeometryListener();
       update_button.addActionListener(update_listener);
-
+*/
       layout.setHorizontalGroup(
         layout.createSequentialGroup().
           addGroup(layout.createParallelGroup().
             addComponent(map,450,450,450).
             addComponent(zoom_label).
-            addComponent(zoom_slider,200,200,200)).
-          addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).
-            addComponent(table).
-            addComponent(orientation,300,300,300).
-            addComponent(button_panel,400,400,400).
+            addComponent(zoom_slider,200,200,200).
             addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).
-              addGroup(layout.createSequentialGroup().
-                addComponent(latitude_label).
-                addComponent(latitude_text).
-                addComponent(longitude_label).
-                addComponent(longitude_text)).
-              addGroup(layout.createSequentialGroup().
-                addComponent(altitude_label).
-                addComponent(altitude_text).
-                addComponent(gps_cable_label).
-                addComponent(gps_cable_text))).
-              addComponent(update_button))
-      );
+               addGroup(layout.createSequentialGroup().
+            	addComponent(latitude_label).
+            	addComponent(latitude_text).
+            	addComponent(longitude_label).
+            	addComponent(longitude_text))))
+         //addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).
+          //  addComponent(table).
+          //  addComponent(orientation,300,300,300).
+          //  addComponent(button_panel,400,400,400).
+          // addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER).
+          //    addGroup(layout.createSequentialGroup().
+          //     addComponent(latitude_label).
+          //     addComponent(latitude_text).
+          //     addComponent(longitude_label).
+          //     addComponent(longitude_text))//.
+              //addGroup(layout.createSequentialGroup().
+              //  addComponent(altitude_label).
+              //  addComponent(altitude_text).
+              //  addComponent(gps_cable_label).
+              //  addComponent(gps_cable_text))).
+              //addComponent(update_button)
+        );
       layout.setVerticalGroup(
         layout.createParallelGroup().
           addGroup(layout.createSequentialGroup().
             addComponent(map,450,450,450).
             addComponent(zoom_label).
-            addComponent(zoom_slider)).
-          addGroup(layout.createSequentialGroup().
-            addComponent(table).
-            addComponent(orientation).
-            addComponent(button_panel,50,50,50).
+            addComponent(zoom_slider).
             addGroup(layout.createSequentialGroup().
-              addGroup(layout.createParallelGroup().
+               addGroup(layout.createParallelGroup().
                 addComponent(latitude_label).
                 addComponent(latitude_text).
                 addComponent(longitude_label).
-                addComponent(longitude_text)).
-              addGroup(layout.createParallelGroup().
-                addComponent(altitude_label).
-                addComponent(altitude_text).
-                addComponent(gps_cable_label).
-                addComponent(gps_cable_text))).
-              addComponent(update_button))
-      );
+                addComponent(longitude_text))))
+          //addGroup(layout.createSequentialGroup().
+          //  addComponent(table).
+          //  addComponent(orientation).
+          //  addComponent(button_panel,50,50,50).
+          //addGroup(layout.createSequentialGroup().
+          //    addGroup(layout.createParallelGroup().
+          //      addComponent(latitude_label).
+          //      addComponent(latitude_text).
+          //      addComponent(longitude_label).
+          //      addComponent(longitude_text))//.
+              //addGroup(layout.createParallelGroup().
+              //  addComponent(altitude_label).
+              //  addComponent(altitude_text).
+              //  addComponent(gps_cable_label).
+              //  addComponent(gps_cable_text))).
+              //addComponent(update_button)
+       );
     }
 
 
@@ -579,7 +501,9 @@ public class EQUIPGeometry extends JPanel {
       ImageIcon map_image;
 
       void LoadMapImage(double latitude,double longitude,int zoom,int width,int height) {
-        String map_url = "http://maps.google.com/maps/api/staticmap?center="+Double.toString(latitude)+","+Double.toString(longitude)+"&zoom="+Integer.toString(zoom)+"&size="+Integer.toString(width)+"x"+Integer.toString(height)+"&maptype=satellite&sensor=false";
+        String map_url = "https://maps.googleapis.com/maps/api/staticmap?center="+Double.toString(latitude)+","+Double.toString(longitude)+"&zoom="+Integer.toString(zoom)+"&size="+Integer.toString(width)+"x"+Integer.toString(height)+"&maptype=satellite&sensor=false&key=AIzaSyBcNa4GHZ5rnpMF9qC-g1EEIJsgnH3jglI";
+    	//String map_url = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAOVAjqr3Dmiiapsr-vKkj71kvRhxu90NQ?center="+Double.toString(latitude)+","+Double.toString(longitude)+"&zoom="+Integer.toString(zoom)+"&size="+Integer.toString(width)+"x"+Integer.toString(height)+"&maptype=satellite&sensor=false";
+        //String map_url = "http://maps.google.com/maps/api/staticmap?center="+Double.toString(latitude)+","+Double.toString(longitude)+"&zoom="+Integer.toString(zoom)+"&size="+Integer.toString(width)+"x"+Integer.toString(height)+"&maptype=satellite&sensor=false";
         ImageIcon icon;
         try {
           URLConnection con = new URL(map_url).openConnection();
@@ -596,6 +520,7 @@ public class EQUIPGeometry extends JPanel {
         }
         catch ( Exception e ) {
           System.out.println("Did not load new map image.");
+          //System.out.println(e.getMessage());
           icon = new ImageIcon(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/world_map.jpg")));
         }
         map_image = icon;

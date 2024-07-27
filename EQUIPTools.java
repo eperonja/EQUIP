@@ -32,183 +32,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class EQUIPTools {
-	public static boolean verifyFile(String filename, String type) {
-		File f = new File(filename);
-		if (!f.exists()) {
-			if (type.equals("equip")) {
-				try {
-				      File conf = new File("conf");
-				      if (!conf.exists()) {
-				    	  conf.mkdir();
-				      }				
-					f.createNewFile();
-					FileOutputStream out = new FileOutputStream(filename);
-					PrintStream prt = new PrintStream(out);
-					prt.println("#EQUIP CONFIG FILE");
-					prt.println("#User saved commands that cannot be queried from the DAQ.");
-					prt.close();
-				} catch (Exception e) {
-		            JOptionPane.showMessageDialog(EQUIP.frame,
-		                    "Error creating equip config file.",
-		                    "I/O Error",JOptionPane.WARNING_MESSAGE);
-		 		}
-			}
-			if (type.equals("geometry")) {
-				try {
-				      File conf = new File("conf");
-				      if (!conf.exists()) {
-				    	  conf.mkdir();
-				      }				
-					f.createNewFile();
-					FileOutputStream out = new FileOutputStream(filename);
-					PrintStream prt = new PrintStream(out);
-					prt.println("#GEOMETRY CONFIG FILE");
-					prt.println("#User saved parameters.");
-					prt.close();
-				} catch (Exception e) {
-		            JOptionPane.showMessageDialog(EQUIP.frame,
-		                    "Error creating geometry config file.",
-		                    "I/O Error",JOptionPane.WARNING_MESSAGE);
-		 		}
-			}
-		}	
-		
-		return f.exists();
-	}//end of verifyFile
-	
-	public static ArrayList getSavedST(String filename) {
-		ArrayList stCommands = new ArrayList();
-		try {
-			FileInputStream fstream = new FileInputStream(filename);
-			BufferedReader in = new BufferedReader(new InputStreamReader(fstream));
-			String line;
-			while ((line = in.readLine()) != null) {
-				if (line.startsWith("#")) {
-					continue;
-				}
-				if (line.startsWith("ST")) {
-					String[] stParsed = line.split(" "); 
-					if (stParsed.length == 3) {
-						stCommands.add(stParsed[1]);
-						stCommands.add(stParsed[2]);
-					}
-				}
-			}
-			in.close();
-		} catch (Exception e) {
-            JOptionPane.showMessageDialog(EQUIP.frame,
-                    "Error opening config file.",
-                    "I/O Error",JOptionPane.WARNING_MESSAGE);
- 		}
-		return stCommands;
-	}//end of getSavedST
-	
-	public static void setSavedST(String filename, String stCommand) {
-		ArrayList fileContent = new ArrayList();		
-		try {
-			FileInputStream fstream = new FileInputStream(filename);
-			BufferedReader in = new BufferedReader(new InputStreamReader(fstream));
-			String line;
-			while ((line = in.readLine()) != null) {
-				if (!line.startsWith("ST")) {
-					fileContent.add(line);
-				}
-			}
-			in.close();
-			FileOutputStream out = new FileOutputStream(filename);
-			PrintStream prt = new PrintStream(out);
-			for (int i = 0; i < fileContent.size(); i++) {
-				prt.println((String) fileContent.get(i));
-			}
-			prt.println(stCommand);
-			prt.close();
-		} catch (Exception e) {
-            JOptionPane.showMessageDialog(EQUIP.frame,
-                    "Error opening config file.",
-                    "I/O Error",JOptionPane.WARNING_MESSAGE);
- 		}
-	}//end of setSavedST
-
-	public static TreeMap<String, ArrayList> getSavedGeometry(String filename) {
-		TreeMap<String, ArrayList> geometry = new TreeMap<String,ArrayList>();
-		try {
-			FileInputStream fstream = new FileInputStream(filename);
-			BufferedReader in = new BufferedReader(new InputStreamReader(fstream));
-			String line;
-			while ((line = in.readLine()) != null) {
-				if (line.startsWith("#")) {
-					continue;
-				}
-				String[] split = line.split(" ");
-				ArrayList temp = new ArrayList();
-				temp = parseList(split);
-				geometry.put(split[0], temp);
-			}
-			in.close();
-		} catch (Exception e) {
-            JOptionPane.showMessageDialog(EQUIP.frame,
-                    "Error opening geometry config file.",
-                    "I/O Error",JOptionPane.WARNING_MESSAGE);
- 		}
-		return geometry;
-	}//end of getSavedGeometry
-
-	public static ArrayList parseList(String[] split) {
-    	ArrayList temp = new ArrayList();
-    	for (int i = 0; i < split.length; i++) {
-    		if (i > 0) {
-    			String list = split[i];
-    			list = list.replace("[", "");
-    			list = list.replace("]", "");
-    			String[] values = list.split(",");
-    			for (int j = 0; j < values.length; j++) {
-    				temp.add(values[j]);
-    			}
-    		}
-    	}
-    	return temp;		
-	}//end of parseList
-	
-    public static ArrayList parseLine(String[] split) {
-    	ArrayList temp = new ArrayList();
-    	for (int i = 0; i < split.length; i++) {
-    		if (i > 0) {
-    			temp.add(split[i]);
-    		}
-    	}
-    	return temp;
-    }//end of parseLine
-
-	public static void setSavedGeometry(String filename, TreeMap<String,ArrayList> geometry) {
-		ArrayList fileContent = new ArrayList();		
-		try {
-			FileInputStream fstream = new FileInputStream(filename);
-			BufferedReader in = new BufferedReader(new InputStreamReader(fstream));
-			String line;
-			while ((line = in.readLine()) != null) {
-				if (line.startsWith("#")) {
-					fileContent.add(line);
-				}
-			}
-			in.close();
-			FileOutputStream out = new FileOutputStream(filename);
-			PrintStream prt = new PrintStream(out);
-			for (int i = 0; i < fileContent.size(); i++) {
-				prt.println((String) fileContent.get(i));
-			}
-			for (Map.Entry<String, ArrayList> e: geometry.entrySet()) {
-				String values = e.getValue().toString();
-				System.out.println(e.getKey() + " " + values);
-				prt.println(e.getKey() + " " + values);
-			}
-			//prt.println(stCommand);
-			prt.close();
-		} catch (Exception e) {
-            JOptionPane.showMessageDialog(EQUIP.frame,
-                    "Error opening config file.",
-                    "I/O Error",JOptionPane.WARNING_MESSAGE);
- 		}
-	}//end of setSavedST    
 	
 	public static List<String> getAvailableSerialPorts() {
 		List<String> serialPorts = new ArrayList();
@@ -232,9 +55,6 @@ public class EQUIPTools {
           JButton field = (JButton)evt.getSource();
           try {
             EQUIP.kernel.sendCommand(field.getName());
-            if (EQUIP.stCommandSave != null) {
-            	setSavedST(EQUIP.equip_conf, EQUIP.stCommandSave);
-            }
           }
           catch ( Exception e ) {
             JOptionPane.showMessageDialog(EQUIP.frame,
@@ -396,6 +216,9 @@ public class EQUIPTools {
                       }
                     }
                     int prev = ((SpinnerNumberModel)coinc_spinner.getModel()).getNumber().intValue();
+                    int shiftedValue = (value>>4);
+                    int amperValue = shiftedValue&3;
+                    int total = amperValue+1;
                     int next = ((value>>4)&3)+1;
                     if ( prev != next ) {
                       coinc_spinner.setModel(new SpinnerNumberModel(next,1,4,1));

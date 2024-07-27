@@ -68,10 +68,6 @@ public class EQUIP extends JPanel {
   EQUIPMuonLifetime lifetime_panel;
   EQUIPRates rates_panel;
   String default_port;
-  static String equip_conf = "conf/equip.conf";
-  ArrayList stCommands = new ArrayList();
-  static String stCommandSave = "";
-  
   static PressureFixer pfix;
   static String STChoice;
   static Color[] series_color = {Color.RED, Color.GREEN, Color.BLUE, Color.CYAN};
@@ -101,13 +97,20 @@ public class EQUIP extends JPanel {
       q -= dq;
     }
     final double TruePressure(double raw) {
+      //System.out.println("true pressure");
+      //System.out.println(raw);
+      //System.out.println(slope);
+      //System.out.println(q);
+      //System.out.println(q0);
       return raw + slope*(q-q0);
     }
     final int Adjust(double raw) {
       double dp = raw - p0;
-//  System.out.println("PressureFixer::Adjust() - dp = "+dp);
+      //System.out.println("PressureFixer::Adjust() - dp = "+dp);
       if ( dp < -dpmax ) {
+    	System.out.print("it gets here\n");
         Decrement();
+        System.out.print(DacValue());
         return DacValue();
       }
       else if ( dp > dpmax ) {
@@ -220,8 +223,13 @@ public class EQUIP extends JPanel {
         if ( field.length == 13 ) {
 //  System.out.println("Pressure = "+field[0]);
           double praw = Double.parseDouble(field[0]);
+          //System.out.println("praw");          
           pane.setText(Double.toString(pfix.TruePressure(praw)));
           int dac = pfix.Adjust(praw);
+          //System.out.println("from connecting to the board, called true pressure and adjust with ");           
+          //System.out.println(s);
+          //System.out.println(praw);
+          //System.out.println(dac);
           if ( dac != 0 ) {
 //             System.out.println("New DAC value = "+dac);
             try {
@@ -411,8 +419,6 @@ public class EQUIP extends JPanel {
         STChoice = String.valueOf(choice);
         try {
           kernel.sendCommand("ST "+Integer.toString(choice)+" "+Integer.toString(time));
-          //prepare string for saving configuration to equip.config
-          stCommandSave = "ST "+Integer.toString(choice)+" "+Integer.toString(time);
         }
         catch ( Exception e2 ) {
           JOptionPane.showMessageDialog(frame,
@@ -443,12 +449,6 @@ public class EQUIP extends JPanel {
       String [] status_strings = { "Disabled(ST 0 x)", "Enabled(ST 1 x)", "With scalers(ST 2 x)", "Reset scalers(ST 3 x)" };
       status_choice = new JComboBox(status_strings);
       status_choice.setSelectedIndex(0);
-      //check if there is anything in equip.conf
-      if (!stCommands.isEmpty()) {
-    	  String choice = (String) stCommands.get(0);
-    	  status_choice.setSelectedIndex(Integer.valueOf(choice));
-          time_interval.setText((String) stCommands.get(1));
-      }
       status_choice.addActionListener(status_listener);
 
       JLabel min_label = new JLabel(" min");
@@ -660,17 +660,6 @@ public class EQUIP extends JPanel {
       log_text = new JTextField(log_file);
       OpenLogListener log_listener = new OpenLogListener();
       log_text.addActionListener(log_listener);
-      if (EQUIPTools.verifyFile(equip_conf, "equip")) {
-    	  //get stored ST command
-    	  stCommands = EQUIPTools.getSavedST(equip_conf);
-    	  //System.out.println("ST "+stCommands);
-      }
-      //try {
-      //  kernel.OpenLogFile(log_file);
-      //}
-      //catch ( Exception e ) {
-      //  JOptionPane.showMessageDialog(frame,"Error opening output file '"+log_file+"'","Port error",JOptionPane.ERROR_MESSAGE);
-      //}
       JButton save_log_as = new JButton("Choose File");
       SaveLogListener sll_listener = new SaveLogListener();
       save_log_as.addActionListener(sll_listener);
@@ -1316,18 +1305,11 @@ public class EQUIP extends JPanel {
 	            kernel.sendCommand("SN");
 	            kernel.sendCommand("V1");
 	            kernel.sendCommand("V2");
-	            //kernel.sendCommand("ST 3 5");
-	            //kernel.sendCommand("ST");
-	            //if user saved ST commands to the equip.config files
-	            if (!stCommands.isEmpty()) {
-	            	String stc = "ST "+stCommands.get(0) + " "+stCommands.get(1);
-		            STChoice = (String) stCommands.get(0);
-		            kernel.sendCommand(stc);
-		            kernel.sendCommand("ST");
-		            kernel.sendCommand("CE");
-	            } else {
-	            	kernel.sendCommand("CD");
-	            }        	
+	            kernel.sendCommand("V3");
+	            kernel.sendCommand("ST 3 5");
+	            kernel.sendCommand("ST");
+	            kernel.sendCommand("CE");
+	            
 	         }
 	         catch ( Exception e1 ) {
 	            JOptionPane.showMessageDialog(frame,
@@ -1441,18 +1423,10 @@ public class EQUIP extends JPanel {
 	            kernel.sendCommand("SN");
 	            kernel.sendCommand("V1");
 	            kernel.sendCommand("V2");
-	            //kernel.sendCommand("ST 3 5");
-	            //kernel.sendCommand("ST");
-	            //if user saved ST commands to the equip.config files
-	            if (!stCommands.isEmpty()) {
-	            	String stc = "ST "+stCommands.get(0) + " "+stCommands.get(1);
-		            STChoice = (String) stCommands.get(0);
-		            kernel.sendCommand(stc);
-		            kernel.sendCommand("ST");
-		            kernel.sendCommand("CE");
-	            } else {
-	            	kernel.sendCommand("CD");
-	            }     
+	            kernel.sendCommand("V3");
+	            kernel.sendCommand("ST 3 5");
+	            kernel.sendCommand("ST");
+	            kernel.sendCommand("CE");
 	        }
 	        catch ( Exception e ) {
 	          JOptionPane.showMessageDialog(frame,
@@ -1498,13 +1472,13 @@ public class EQUIP extends JPanel {
     tabbedPane.addTab("Shower Monitor",icon,air_shower_panel,"Air shower analysis");
     tabbedPane.setMnemonicAt(3,KeyEvent.VK_4);
 
-    lifetime_panel = new EQUIPMuonLifetime();
-    tabbedPane.addTab("Muon Lifetime Monitor",icon,lifetime_panel,"Muon lifetime analysis");
-    tabbedPane.setMnemonicAt(4,KeyEvent.VK_5);
+    //lifetime_panel = new EQUIPMuonLifetime();
+    //tabbedPane.addTab("Muon Lifetime Monitor",icon,lifetime_panel,"Muon lifetime analysis");
+    //tabbedPane.setMnemonicAt(4,KeyEvent.VK_5);
 
-    map_panel = new EQUIPGeometry(air_shower_panel);
-    tabbedPane.addTab("Geometry",icon,map_panel,"Enter geometry data");
-    tabbedPane.setMnemonicAt(5,KeyEvent.VK_6);
+    //map_panel = new EQUIPGeometry(air_shower_panel);
+    //tabbedPane.addTab("Geometry",icon,map_panel,"Enter geometry data");
+    //tabbedPane.setMnemonicAt(4,KeyEvent.VK_5);
 
     JScrollPane pain_in_the_butt = new JScrollPane(tabbedPane,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 //     pain_in_the_butt.add(tabbedPane);
@@ -1538,7 +1512,7 @@ public class EQUIP extends JPanel {
     public void hyperlinkUpdate(HyperlinkEvent evt) {
       if (evt.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
         JEditorPane pane = (JEditorPane)evt.getSource();
-        System.out.println("Opening "+evt.getURL());
+        //System.out.println("Opening "+evt.getURL());
         try {
           URI uri = new URI(evt.getURL().toString());
           java.awt.Desktop.getDesktop().browse(uri);
@@ -1783,7 +1757,7 @@ public class EQUIP extends JPanel {
         fiterr = migrad.errors();
 
         fataset.removeAllSeries();
-        XYSeries series = DatasetUtilities.sampleFunction2DToSeries(new LifetimeFunction(fitpar[0],fitpar[1],fitpar[2]),tmin,10000,50,"f(x)");
+        XYSeries series = DatasetUtils.sampleFunction2DToSeries(new LifetimeFunction(fitpar[0],fitpar[1],fitpar[2]),tmin,10000,50,"f(x)");
         fataset.addSeries(series);
     
         XYTextAnnotation lifetime_label = new XYTextAnnotation("\u03c4 = "+String.format("%.2f",fitpar[2]*0.001)+" \u00b1 "+String.format("%.2f",fiterr[2]*0.001)+" \u03bcs",

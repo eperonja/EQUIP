@@ -42,7 +42,7 @@ import org.jfree.data.xy.XYIntervalSeries;
 import org.jfree.data.xy.XYIntervalSeriesCollection;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.ui.RectangleInsets;
+import org.jfree.chart.ui.RectangleInsets;
 
 
 public class EQUIPRateMonitor extends JPanel {
@@ -111,25 +111,35 @@ public class EQUIPRateMonitor extends JPanel {
             int day = Integer.parseInt(status[5].substring(0,2));
             int mon = Integer.parseInt(status[5].substring(2,4));
             int year = 2000+Integer.parseInt(status[5].substring(4,6));
+            //System.out.println(status[4]);
+            //System.out.println(status[5]);
             Calendar gps_date = new GregorianCalendar();
             gps_date.set(year,mon-1,day,hour,min,sec);  // Month starts at zero
+            //System.out.println(gps_date.getTime());
             long new_time = gps_date.getTimeInMillis();
+            //System.out.println("New time: "+Long.toString(new_time));
             if ( gps_time > 0 ) {
               dt = (new_time-gps_time)*0.001;
+              //System.out.println("dt: "+Double.toString(dt));
               if ( dt > 0 ) {
                 rate = new RateMeasurement(gps_date,dt);
+                //System.out.println("rate: "+rate.toString());
               }
             }
             gps_time = new_time;
-            //System.out.println(s);
+            //System.out.println("gps_time: "+ Long.toString(gps_time));
         
             double p = EQUIP.pfix.TruePressure(Integer.parseInt(status[0]));
+            //System.out.println("from rate monitor");
+            //System.out.println(s);
+            //System.out.println("true pressure: "+Double.toString(p));
             pressure.add(gps_time,p);
             if ( rate != null ) rate.SetPressure(p);
 
             try {
               if ( status[1].charAt(0) == '+' ) status[1] = status[1].substring(1);
               double temp = 0.1*Integer.parseInt(status[1]);
+              //System.out.println("temp: "+Double.toString(temp));
               temperature.add(gps_time,temp);
               if ( rate != null ) rate.SetTemperature(temp);
             }
@@ -144,17 +154,30 @@ public class EQUIPRateMonitor extends JPanel {
             if ( counts[i].startsWith("S") ) {
               counts[i] = counts[i].substring(3);
             }
+            //System.out.println(s);
+            //System.out.println("counts[i]: "+counts[i]);
             long count = Long.parseLong(counts[i],16);
+            //System.out.println("count: "+Long.toString(count));
             if ( dt > 0 ) {
+            	//System.out.println("calculating");
+            	//System.out.println("dt: "+Double.toString(dt));
+            	//System.out.println("previous count: "+Long.toString(prev_count[i]));
               double d = (double)(count-prev_count[i]);
+              //System.out.println("d: "+Double.toString(d));
               double r = d/dt;
               double er = Math.sqrt(d)/dt;
               rate.SetCounts(i,(int)(count-prev_count[i]));
               if ( i < 4 ) {
                 count_rates[i].add(gps_time,gps_time,gps_time,r,r-er,r+er);
+                //System.out.println("count rates gps_time: "+Integer.toString(i)+" "+Long.toString(gps_time));
+                //System.out.println("r: "+Double.toString(r));
+                //System.out.println("er: "+Double.toString(er));
               }
               else if ( i == 4 ) {
                 coincidence_rate.add(gps_time,gps_time,gps_time,r,r-er,r+er);
+                //System.out.println("coincidence_rate gps_time: "+Long.toString(gps_time));
+                //System.out.println("r: "+Double.toString(r));
+                //System.out.println("er: "+Double.toString(er));
               }
             }
             if (EQUIP.STChoice != null) {
